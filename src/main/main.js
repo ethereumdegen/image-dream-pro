@@ -183,7 +183,17 @@ ipcMain.handle('fal:run', async (_e, { modelId, input, saveFolder }) => {
 ipcMain.handle('fal:getBilling', async () => {
   const apiKey = settings.get('falApiKey');
   if (!apiKey) {
-    throw new Error('No fal.ai API key set.');
+    return { ok: false, code: 'NO_KEY', message: 'No fal.ai API key set.' };
   }
-  return fal.getBilling({ apiKey });
+  try {
+    const data = await fal.getBilling({ apiKey });
+    return { ok: true, data };
+  } catch (e) {
+    return {
+      ok: false,
+      code: e.code || 'ERROR',
+      status: e.status,
+      message: e.message || String(e),
+    };
+  }
 });

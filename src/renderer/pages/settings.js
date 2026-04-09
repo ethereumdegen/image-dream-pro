@@ -87,6 +87,7 @@ export async function renderSettingsPage(root) {
   const refreshCreditsBtn = panel.querySelector('#refresh-credits');
 
   async function loadCredits() {
+    creditsValue.title = '';
     if (!keyInput.value.trim()) {
       creditsValue.textContent = 'No API key';
       creditsValue.classList.remove('ok', 'err');
@@ -95,16 +96,29 @@ export async function renderSettingsPage(root) {
     creditsValue.textContent = 'Loading…';
     creditsValue.classList.remove('ok', 'err');
     try {
-      const billing = await window.api.fal.getBilling();
-      const c = billing && billing.credits;
-      if (c && typeof c.current_balance === 'number') {
-        const amount = c.current_balance.toFixed(2);
-        const currency = c.currency || 'USD';
-        creditsValue.textContent = `${amount} ${currency}`;
-        creditsValue.classList.add('ok');
-      } else {
-        creditsValue.textContent = 'Unavailable';
+      const res = await window.api.fal.getBilling();
+      if (res && res.ok) {
+        const c = res.data && res.data.credits;
+        if (c && typeof c.current_balance === 'number') {
+          const amount = c.current_balance.toFixed(2);
+          const currency = c.currency || 'USD';
+          creditsValue.textContent = `${amount} ${currency}`;
+          creditsValue.classList.add('ok');
+        } else {
+          creditsValue.textContent = 'Unavailable';
+        }
+        return;
       }
+      if (res && res.code === 'ADMIN_KEY_REQUIRED') {
+        creditsValue.textContent = 'Requires ADMIN key';
+        creditsValue.title =
+          'fal.ai only exposes billing to ADMIN-scoped keys. Create one at https://fal.ai/dashboard/keys to view credits here.';
+        creditsValue.classList.add('err');
+        return;
+      }
+      creditsValue.textContent = 'Error';
+      creditsValue.title = (res && res.message) || 'Unknown error';
+      creditsValue.classList.add('err');
     } catch (e) {
       creditsValue.textContent = 'Error';
       creditsValue.title = e.message || String(e);

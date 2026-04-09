@@ -76,7 +76,12 @@ async function getBilling({ apiKey }) {
   const res = await fetch(url, { headers: authHeader(apiKey) });
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`fal.ai billing failed (${res.status}): ${text}`);
+    const err = new Error(`fal.ai billing failed (${res.status}): ${text}`);
+    err.status = res.status;
+    if (res.status === 403 && /ADMIN/i.test(text)) {
+      err.code = 'ADMIN_KEY_REQUIRED';
+    }
+    throw err;
   }
   return res.json(); // { username, credits: { current_balance, currency } }
 }

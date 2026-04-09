@@ -222,15 +222,9 @@ function buildTileEl(tile) {
     ev.stopPropagation();
     beginTileDrag(tile, tileEl, ev);
   });
-  tileEl.addEventListener('mouseenter', () => {
-    if (state.busy) return;
-    showHoverPopup(tileEl, tile);
-  });
-  tileEl.addEventListener('mouseleave', () => hideHoverPopup());
   tileEl.addEventListener('contextmenu', (ev) => {
     ev.preventDefault();
     ev.stopPropagation();
-    hideHoverPopup();
     selectTile(tile.id);
     showTileContextMenu(tile, ev.clientX, ev.clientY);
   });
@@ -440,6 +434,37 @@ async function loadImageDims(src) {
   });
 }
 
+// Approximate the decoded byte size of a data: URL. Base64 payloads are
+// 4 chars -> 3 bytes (minus padding); URL-encoded payloads decode to UTF-8.
+function dataUrlByteSize(dataUrl) {
+  if (typeof dataUrl !== 'string') return 0;
+  const comma = dataUrl.indexOf(',');
+  if (comma < 0) return 0;
+  const header = dataUrl.slice(5, comma);
+  const payload = dataUrl.slice(comma + 1);
+  if (/;base64/i.test(header)) {
+    const padding = payload.endsWith('==') ? 2 : payload.endsWith('=') ? 1 : 0;
+    return Math.max(0, Math.floor((payload.length * 3) / 4) - padding);
+  }
+  try {
+    return new Blob([decodeURIComponent(payload)]).size;
+  } catch (_) {
+    return payload.length;
+  }
+}
+
+function formatBytes(n) {
+  if (!Number.isFinite(n) || n <= 0) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  let i = 0;
+  let v = n;
+  while (v >= 1024 && i < units.length - 1) {
+    v /= 1024;
+    i += 1;
+  }
+  return `${v < 10 && i > 0 ? v.toFixed(1) : Math.round(v)} ${units[i]}`;
+}
+
 function computeDisplaySize(natW, natH, maxDim = 180) {
   const m = Math.max(natW, natH) || 1;
   const scale = Math.min(1, maxDim / m);
@@ -467,6 +492,8 @@ async function addTile({ src, name, libRef = null, kind, cx, cy, x, y, select = 
     y: tileY,
     width,
     height,
+    natW: dims.w,
+    natH: dims.h,
     src,
     name: name || 'image',
     kind: kind || (isVector(name, src) ? 'vector' : 'raster'),
@@ -531,6 +558,8 @@ async function importDroppedFiles(files, dropX, dropY) {
       y: Math.round(dropY + offset - height / 2),
       width,
       height,
+      natW: r.dims.w,
+      natH: r.dims.h,
       src: r.dataUrl,
       name: r.ref.name,
       kind: isVector(r.ref.name, r.dataUrl) ? 'vector' : 'raster',
@@ -659,12 +688,25 @@ function renderSelectedTileSidebar(tile) {
       <div class="editor-selected-name">${esc(tile.name || '')}</div>
       <div class="editor-selected-meta">
         <span class="tag">${tile.kind === 'vector' ? 'VECTOR' : 'RASTER'}</span>
+        ${
+          tile.natW && tile.natH
+            ? `<span class="tag">${tile.natW}×${tile.natH}</span>`
+            : ''
+        }
+        <span class="tag">${esc(formatBytes(dataUrlByteSize(tile.src)))}</span>
       </div>
       <div class="editor-actions"></div>
       <div class="editor-sidebar-hint">Click empty canvas to deselect.</div>
     </div>
   `);
   wrap.querySelector('img').src = tile.src;
+
+  const previewEl = wrap.querySelector('.editor-selected-preview');
+  previewEl.addEventListener('mouseenter', () => {
+    if (state.busy) return;
+    showHoverPopup(previewEl, tile);
+  });
+  previewEl.addEventListener('mouseleave', () => hideHoverPopup());
 
   const actions = wrap.querySelector('.editor-actions');
 
