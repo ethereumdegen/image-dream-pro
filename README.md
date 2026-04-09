@@ -2,6 +2,11 @@
 
 An Electron desktop app for running [fal.ai](https://fal.ai) image models and managing a local media library.
 
+
+<img width="1440" height="942" alt="image_dream_pro" src="https://github.com/user-attachments/assets/b1358d5f-e3f6-42a7-959f-ff8e003b696d" />
+
+
+
 ## Features
 
 - **Models page** – pick a fal.ai model from a curated list (or enter any model id), fill in its parameters, and run it against your API key.
