@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "description": "Electron app for running fal.ai models with a local media library",
   "main": "src/main/main.js",
-  "author": "Image Dream Pro",
+  "author": {
+    "name": "Image Dream Pro",
+    "email": "noreply@imagedreampro.app"
+  },
   "license": "MIT",
   "scripts": {
     "start": "electron .",

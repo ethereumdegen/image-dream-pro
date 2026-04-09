@@ -7,6 +7,19 @@ An Electron desktop app for running [fal.ai](https://fal.ai) image models and ma
 
 
 
+<!-- DOWNLOADS:START -->
+## Downloads
+
+Pre-built installers are published on the [Releases page](https://github.com/ethereumdegen/image-dream-pro/releases/latest).
+
+**Latest version: 0.1.0**
+
+- **Linux (AppImage):** [ImageDreamPro-0.1.0-linux-x86_64.AppImage](https://github.com/ethereumdegen/image-dream-pro/releases/download/v0.1.0/ImageDreamPro-0.1.0-linux-x86_64.AppImage)
+- **Linux (.deb):** [ImageDreamPro-0.1.0-linux-amd64.deb](https://github.com/ethereumdegen/image-dream-pro/releases/download/v0.1.0/ImageDreamPro-0.1.0-linux-amd64.deb)
+- **Windows (portable zip):** [ImageDreamPro-0.1.0-win-x64-portable.zip](https://github.com/ethereumdegen/image-dream-pro/releases/download/v0.1.0/ImageDreamPro-0.1.0-win-x64-portable.zip)
+- **macOS (Intel):** [ImageDreamPro-0.1.0-mac-x64.zip](https://github.com/ethereumdegen/image-dream-pro/releases/download/v0.1.0/ImageDreamPro-0.1.0-mac-x64.zip)
+<!-- DOWNLOADS:END -->
+
 ## Features
 
 - **Models page** – pick a fal.ai model from a curated list (or enter any model id), fill in its parameters, and run it against your API key.
