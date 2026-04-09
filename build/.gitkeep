@@ -1,0 +1,4 @@
+# Place production icons here before building installers:
+#   icon.png   (512x512) — Linux
+#   icon.icns            — macOS
+#   icon.ico             — Windows

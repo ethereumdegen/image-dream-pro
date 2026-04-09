@@ -1,0 +1,496 @@
+{
+  "$schema": "./models.schema.json",
+  "version": 1,
+  "description": "Catalog of fal.ai models available in Image Dream Pro. Add/edit entries here to expose new models in the UI without touching code.",
+  "models": [
+    {
+      "id": "fal-ai/flux/schnell",
+      "name": "FLUX.1 [schnell]",
+      "description": "Fast, high quality text-to-image. Great default for quick iteration.",
+      "category": "text-to-image",
+      "inputMedia": [],
+      "outputMedia": ["image"],
+      "outputField": "images",
+      "inputs": [
+        { "name": "prompt", "label": "Prompt", "type": "textarea", "required": true, "placeholder": "A cinematic photo of..." },
+        {
+          "name": "image_size",
+          "label": "Image size",
+          "type": "select",
+          "default": "landscape_4_3",
+          "options": [
+            "square_hd",
+            "square",
+            "portrait_4_3",
+            "portrait_16_9",
+            "landscape_4_3",
+            "landscape_16_9"
+          ]
+        },
+        { "name": "num_inference_steps", "label": "Steps", "type": "number", "default": 4, "min": 1, "max": 12 },
+        { "name": "num_images", "label": "Number of images", "type": "number", "default": 1, "min": 1, "max": 4 },
+        { "name": "seed", "label": "Seed (optional)", "type": "number" },
+        { "name": "enable_safety_checker", "label": "Safety checker", "type": "boolean", "default": true }
+      ]
+    },
+    {
+      "id": "fal-ai/flux/dev",
+      "name": "FLUX.1 [dev]",
+      "description": "Higher quality text-to-image (slower than schnell).",
+      "category": "text-to-image",
+      "inputMedia": [],
+      "outputMedia": ["image"],
+      "outputField": "images",
+      "inputs": [
+        { "name": "prompt", "label": "Prompt", "type": "textarea", "required": true },
+        {
+          "name": "image_size",
+          "label": "Image size",
+          "type": "select",
+          "default": "landscape_4_3",
+          "options": [
+            "square_hd",
+            "square",
+            "portrait_4_3",
+            "portrait_16_9",
+            "landscape_4_3",
+            "landscape_16_9"
+          ]
+        },
+        { "name": "num_inference_steps", "label": "Steps", "type": "number", "default": 28, "min": 1, "max": 50 },
+        { "name": "guidance_scale", "label": "Guidance scale", "type": "number", "default": 3.5, "min": 0, "max": 20, "step": 0.1 },
+        { "name": "num_images", "label": "Number of images", "type": "number", "default": 1, "min": 1, "max": 4 },
+        { "name": "seed", "label": "Seed (optional)", "type": "number" }
+      ]
+    },
+    {
+      "id": "fal-ai/ideogram/v3",
+      "name": "Ideogram V3 (posters & typography)",
+      "description": "Ideogram V3 — exceptional text rendering and layout. Great for posters, ads, logos, and anything with on-image text.",
+      "category": "text-to-image",
+      "inputMedia": [],
+      "outputMedia": ["image"],
+      "outputField": "images",
+      "inputs": [
+        { "name": "prompt", "label": "Prompt", "type": "textarea", "required": true, "placeholder": "A modern minimalist poster that says \"LAUNCH\" in bold..." },
+        { "name": "negative_prompt", "label": "Negative prompt", "type": "textarea" },
+        {
+          "name": "rendering_speed",
+          "label": "Quality (rendering speed)",
+          "type": "select",
+          "default": "BALANCED",
+          "options": ["TURBO", "BALANCED", "QUALITY"]
+        },
+        {
+          "name": "style",
+          "label": "Style",
+          "type": "select",
+          "default": "AUTO",
+          "options": ["AUTO", "GENERAL", "REALISTIC", "DESIGN"]
+        },
+        {
+          "name": "image_size",
+          "label": "Image size",
+          "type": "select",
+          "default": "square_hd",
+          "options": [
+            "square_hd",
+            "square",
+            "portrait_4_3",
+            "portrait_16_9",
+            "landscape_4_3",
+            "landscape_16_9"
+          ]
+        },
+        { "name": "num_images", "label": "Number of images", "type": "number", "default": 1, "min": 1, "max": 8 },
+        { "name": "expand_prompt", "label": "Expand prompt (magic prompt)", "type": "boolean", "default": true },
+        { "name": "seed", "label": "Seed (optional)", "type": "number" }
+      ]
+    },
+    {
+      "id": "fal-ai/esrgan",
+      "name": "ESRGAN Upscaler",
+      "description": "Upscale a local image 2x or 4x. Optional face enhancement.",
+      "category": "upscale",
+      "inputMedia": ["image"],
+      "outputMedia": ["image"],
+      "outputField": "image",
+      "inputs": [
+        { "name": "image_url", "label": "Input image", "type": "image", "required": true },
+        { "name": "scale", "label": "Scale", "type": "select", "default": 2, "options": [2, 4] },
+        { "name": "tile", "label": "Tile size", "type": "number", "default": 0, "min": 0, "max": 2048 },
+        { "name": "face", "label": "Face enhancement", "type": "boolean", "default": false },
+        {
+          "name": "model",
+          "label": "Model",
+          "type": "select",
+          "default": "RealESRGAN_x4plus",
+          "options": [
+            "RealESRGAN_x4plus",
+            "RealESRGAN_x2plus",
+            "RealESRGAN_x4plus_anime_6B",
+            "RealESRGAN_x4_v3",
+            "RealESRGAN_x4_wdn_v3",
+            "RealESRGAN_x4_anime_v3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fal-ai/kling-video/v3/pro/image-to-video",
+      "name": "Kling 3.0 Pro (image-to-video)",
+      "description": "Kuaishou Kling v3 Pro — animate a local image into a short high-quality video clip.",
+      "category": "image-to-video",
+      "inputMedia": ["image"],
+      "outputMedia": ["video"],
+      "outputField": "video",
+      "inputs": [
+        { "name": "prompt", "label": "Prompt", "type": "textarea", "required": true, "placeholder": "Describe the motion / scene" },
+        { "name": "image_url", "label": "Input image", "type": "image", "required": true },
+        { "name": "negative_prompt", "label": "Negative prompt", "type": "textarea", "default": "blur, distort, and low quality" },
+        {
+          "name": "duration",
+          "label": "Duration (seconds)",
+          "type": "select",
+          "default": "5",
+          "options": ["5", "10"]
+        },
+        { "name": "cfg_scale", "label": "CFG scale", "type": "number", "default": 0.5, "min": 0, "max": 1, "step": 0.05 }
+      ]
+    },
+    {
+      "id": "fal-ai/recraft/vectorize",
+      "name": "Recraft Vectorize (image → SVG)",
+      "description": "Converts a raster image (PNG/JPG/WebP) into a clean vector SVG. Great for cleaning up generated images or logos.",
+      "category": "image-to-vector",
+      "inputMedia": ["image"],
+      "outputMedia": ["vector"],
+      "outputField": "image",
+      "inputs": [
+        { "name": "image_url", "label": "Input image", "type": "image", "required": true }
+      ]
+    },
+    {
+      "id": "fal-ai/recraft/v3/image-to-image",
+      "name": "Recraft V3 (image-to-image)",
+      "description": "Recraft V3 image-to-image — guide a render with an input image and strength control. Pick a vector_* style for SVG output.",
+      "category": "image-to-image",
+      "inputMedia": ["image"],
+      "outputMedia": ["image", "vector"],
+      "outputField": "images",
+      "inputs": [
+        { "name": "prompt", "label": "Prompt", "type": "textarea", "required": true },
+        { "name": "image_url", "label": "Input image", "type": "image", "required": true },
+        { "name": "strength", "label": "Strength", "type": "number", "default": 0.5, "min": 0, "max": 1, "step": 0.05 },
+        {
+          "name": "style",
+          "label": "Style",
+          "type": "select",
+          "default": "realistic_image",
+          "options": [
+            "any",
+            "realistic_image",
+            "digital_illustration",
+            "vector_illustration",
+            "realistic_image/b_and_w",
+            "realistic_image/hard_flash",
+            "realistic_image/hdr",
+            "realistic_image/natural_light",
+            "realistic_image/studio_portrait",
+            "realistic_image/enterprise",
+            "realistic_image/motion_blur",
+            "digital_illustration/pixel_art",
+            "digital_illustration/hand_drawn",
+            "digital_illustration/grain",
+            "digital_illustration/infantile_sketch",
+            "digital_illustration/2d_art_poster",
+            "digital_illustration/handmade_3d",
+            "digital_illustration/hand_drawn_outline",
+            "digital_illustration/engraving_color",
+            "digital_illustration/2d_art_poster_2",
+            "vector_illustration/engraving",
+            "vector_illustration/line_art",
+            "vector_illustration/line_circuit",
+            "vector_illustration/linocut"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fal-ai/ideogram/v3/generate-transparent",
+      "name": "Ideogram V3 (transparent PNG)",
+      "description": "Ideogram V3 — generate an image on a transparent background. Great for stickers, icons, product cutouts, and logos that need alpha.",
+      "category": "text-to-image",
+      "inputMedia": [],
+      "outputMedia": ["image"],
+      "outputField": "images",
+      "inputs": [
+        { "name": "prompt", "label": "Prompt", "type": "textarea", "required": true, "placeholder": "A die-cut sticker of a smiling robot, transparent background" },
+        { "name": "negative_prompt", "label": "Negative prompt", "type": "textarea" },
+        {
+          "name": "aspect_ratio",
+          "label": "Aspect ratio",
+          "type": "select",
+          "default": "1:1",
+          "options": ["1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3", "16:10", "10:16", "3:1", "1:3"]
+        },
+        {
+          "name": "style",
+          "label": "Style",
+          "type": "select",
+          "default": "auto",
+          "options": ["auto", "general", "realistic", "design", "render_3D", "anime"]
+        },
+        { "name": "expand_prompt", "label": "Expand prompt (magic prompt)", "type": "boolean", "default": true },
+        { "name": "seed", "label": "Seed (optional)", "type": "number" }
+      ]
+    },
+    {
+      "id": "fal-ai/ideogram/v3/layerize-text",
+      "name": "Ideogram V3 Layerize (text removal)",
+      "description": "Ideogram V3 Layerize — removes on-image text from a flat graphic and returns a clean, text-free version of the image. Great for reusing posters, ads, and logos.",
+      "category": "image-to-image",
+      "inputMedia": ["image"],
+      "outputMedia": ["image"],
+      "outputField": "image",
+      "inputs": [
+        { "name": "image_url", "label": "Input image", "type": "image", "required": true }
+      ]
+    },
+    {
+      "id": "fal-ai/ideogram/character",
+      "name": "Ideogram Character (consistent character)",
+      "description": "Ideogram Character — generate new images of a consistent character by providing one or more reference photos of that character.",
+      "category": "text-to-image",
+      "inputMedia": ["image"],
+      "outputMedia": ["image"],
+      "outputField": "images",
+      "inputs": [
+        { "name": "prompt", "label": "Prompt", "type": "textarea", "required": true, "placeholder": "The same character, in a futuristic city at sunset" },
+        { "name": "reference_image_urls", "label": "Character reference images", "type": "image_array", "required": true },
+        { "name": "negative_prompt", "label": "Negative prompt", "type": "textarea" },
+        {
+          "name": "image_size",
+          "label": "Image size",
+          "type": "select",
+          "default": "square_hd",
+          "options": [
+            "square_hd",
+            "square",
+            "portrait_4_3",
+            "portrait_16_9",
+            "landscape_4_3",
+            "landscape_16_9"
+          ]
+        },
+        {
+          "name": "style",
+          "label": "Style",
+          "type": "select",
+          "default": "AUTO",
+          "options": ["AUTO", "REALISTIC", "FICTION"]
+        },
+        {
+          "name": "rendering_speed",
+          "label": "Quality (rendering speed)",
+          "type": "select",
+          "default": "BALANCED",
+          "options": ["TURBO", "BALANCED", "QUALITY"]
+        },
+        { "name": "num_images", "label": "Number of images", "type": "number", "default": 1, "min": 1, "max": 8 },
+        { "name": "expand_prompt", "label": "Expand prompt (magic prompt)", "type": "boolean", "default": true },
+        { "name": "seed", "label": "Seed (optional)", "type": "number" }
+      ]
+    },
+    {
+      "id": "fal-ai/ideogram/character/edit",
+      "name": "Ideogram Character Edit",
+      "description": "Ideogram Character Edit — edit an existing image while keeping a reference character consistent. Provide the image to edit plus one or more reference photos of the character.",
+      "category": "image-to-image",
+      "inputMedia": ["image"],
+      "outputMedia": ["image"],
+      "outputField": "images",
+      "inputs": [
+        { "name": "prompt", "label": "Prompt", "type": "textarea", "required": true, "placeholder": "Change the background to a snowy mountain, keep the character" },
+        { "name": "image_url", "label": "Image to edit", "type": "image", "required": true },
+        { "name": "reference_image_urls", "label": "Character reference images", "type": "image_array", "required": true },
+        { "name": "negative_prompt", "label": "Negative prompt", "type": "textarea" },
+        {
+          "name": "image_size",
+          "label": "Image size",
+          "type": "select",
+          "default": "square_hd",
+          "options": [
+            "square_hd",
+            "square",
+            "portrait_4_3",
+            "portrait_16_9",
+            "landscape_4_3",
+            "landscape_16_9"
+          ]
+        },
+        {
+          "name": "style",
+          "label": "Style",
+          "type": "select",
+          "default": "AUTO",
+          "options": ["AUTO", "REALISTIC", "FICTION"]
+        },
+        {
+          "name": "rendering_speed",
+          "label": "Quality (rendering speed)",
+          "type": "select",
+          "default": "BALANCED",
+          "options": ["TURBO", "BALANCED", "QUALITY"]
+        },
+        { "name": "num_images", "label": "Number of images", "type": "number", "default": 1, "min": 1, "max": 8 },
+        { "name": "expand_prompt", "label": "Expand prompt (magic prompt)", "type": "boolean", "default": true },
+        { "name": "seed", "label": "Seed (optional)", "type": "number" }
+      ]
+    },
+    {
+      "id": "fal-ai/ideogram/character/remix",
+      "name": "Ideogram Character Remix",
+      "description": "Ideogram Character Remix — remix an input image guided by a prompt while preserving a reference character. Use the strength slider to control how much the input image is changed.",
+      "category": "image-to-image",
+      "inputMedia": ["image"],
+      "outputMedia": ["image"],
+      "outputField": "images",
+      "inputs": [
+        { "name": "prompt", "label": "Prompt", "type": "textarea", "required": true, "placeholder": "Same character, oil painting style, golden hour lighting" },
+        { "name": "image_url", "label": "Image to remix", "type": "image", "required": true },
+        { "name": "reference_image_urls", "label": "Character reference images", "type": "image_array", "required": true },
+        { "name": "strength", "label": "Strength", "type": "number", "default": 0.8, "min": 0.01, "max": 1, "step": 0.05 },
+        { "name": "negative_prompt", "label": "Negative prompt", "type": "textarea" },
+        {
+          "name": "image_size",
+          "label": "Image size",
+          "type": "select",
+          "default": "square_hd",
+          "options": [
+            "square_hd",
+            "square",
+            "portrait_4_3",
+            "portrait_16_9",
+            "landscape_4_3",
+            "landscape_16_9"
+          ]
+        },
+        {
+          "name": "style",
+          "label": "Style",
+          "type": "select",
+          "default": "AUTO",
+          "options": ["AUTO", "REALISTIC", "FICTION"]
+        },
+        {
+          "name": "rendering_speed",
+          "label": "Quality (rendering speed)",
+          "type": "select",
+          "default": "BALANCED",
+          "options": ["TURBO", "BALANCED", "QUALITY"]
+        },
+        { "name": "num_images", "label": "Number of images", "type": "number", "default": 1, "min": 1, "max": 8 },
+        { "name": "expand_prompt", "label": "Expand prompt (magic prompt)", "type": "boolean", "default": true },
+        { "name": "seed", "label": "Seed (optional)", "type": "number" }
+      ]
+    },
+    {
+      "id": "smoretalk-ai/rembg-enhance",
+      "name": "Rembg Enhance (remove background)",
+      "description": "Rembg Enhance — high quality background removal. Optimized for 2D vector graphics, 3D renders, and photos using matting technology. Output is a transparent PNG.",
+      "category": "image-to-image",
+      "inputMedia": ["image"],
+      "outputMedia": ["image"],
+      "outputField": "image",
+      "inputs": [
+        { "name": "image_url", "label": "Input image", "type": "image", "required": true }
+      ]
+    },
+    {
+      "id": "fal-ai/recraft/v4/pro/text-to-vector",
+      "name": "Recraft V4 Pro (text-to-vector)",
+      "description": "Recraft V4 Pro — premium SVG vector generation with native vector output. Great for logos, icons, and professional design work.",
+      "category": "text-to-vector",
+      "inputMedia": [],
+      "outputMedia": ["image", "vector"],
+      "outputField": "images",
+      "inputs": [
+        { "name": "prompt", "label": "Prompt", "type": "textarea", "required": true, "placeholder": "A minimalist line-art logo of a fox" },
+        {
+          "name": "image_size",
+          "label": "Image size",
+          "type": "select",
+          "default": "square_hd",
+          "options": [
+            "square_hd",
+            "square",
+            "portrait_4_3",
+            "portrait_16_9",
+            "landscape_4_3",
+            "landscape_16_9"
+          ]
+        },
+        { "name": "enable_safety_checker", "label": "Safety checker", "type": "boolean", "default": true }
+      ]
+    },
+    {
+      "id": "fal-ai/recraft-v3",
+      "name": "Recraft V3 (text-to-vector)",
+      "description": "Recraft V3 text-to-image. Select the vector_illustration style (or any vector_* style) to produce SVG output.",
+      "category": "text-to-vector",
+      "inputMedia": [],
+      "outputMedia": ["image", "vector"],
+      "outputField": "images",
+      "inputs": [
+        { "name": "prompt", "label": "Prompt", "type": "textarea", "required": true },
+        {
+          "name": "image_size",
+          "label": "Image size",
+          "type": "select",
+          "default": "square_hd",
+          "options": [
+            "square_hd",
+            "square",
+            "portrait_4_3",
+            "portrait_16_9",
+            "landscape_4_3",
+            "landscape_16_9"
+          ]
+        },
+        {
+          "name": "style",
+          "label": "Style",
+          "type": "select",
+          "default": "vector_illustration",
+          "options": [
+            "any",
+            "realistic_image",
+            "digital_illustration",
+            "vector_illustration",
+            "realistic_image/b_and_w",
+            "realistic_image/hard_flash",
+            "realistic_image/hdr",
+            "realistic_image/natural_light",
+            "realistic_image/studio_portrait",
+            "realistic_image/enterprise",
+            "realistic_image/motion_blur",
+            "digital_illustration/pixel_art",
+            "digital_illustration/hand_drawn",
+            "digital_illustration/grain",
+            "digital_illustration/infantile_sketch",
+            "digital_illustration/2d_art_poster",
+            "digital_illustration/handmade_3d",
+            "digital_illustration/hand_drawn_outline",
+            "digital_illustration/engraving_color",
+            "digital_illustration/2d_art_poster_2",
+            "vector_illustration/engraving",
+            "vector_illustration/line_art",
+            "vector_illustration/line_circuit",
+            "vector_illustration/linocut"
+          ]
+        }
+      ]
+    }
+  ]
+}
