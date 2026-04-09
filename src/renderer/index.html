@@ -15,18 +15,33 @@
         <div class="brand-mark">ID</div>
         <div class="brand-text">
           <div class="brand-title">Image Dream</div>
-          <div class="brand-sub">Pro</div>
+          <div class="brand-sub">
+            Pro
+            <span id="brand-version" class="brand-version">v…</span>
+          </div>
         </div>
+        <button
+          id="sidebar-toggle"
+          class="sidebar-toggle"
+          type="button"
+          aria-label="Toggle sidebar"
+          title="Collapse sidebar"
+        >
+          &laquo;
+        </button>
       </div>
       <nav class="nav">
-        <button class="nav-item active" data-page="models">
-          <span class="nav-icon">M</span><span>Models</span>
+        <button class="nav-item" data-page="editor" title="Editor">
+          <span class="nav-icon">E</span><span class="nav-label">Editor</span>
         </button>
-        <button class="nav-item" data-page="library">
-          <span class="nav-icon">L</span><span>Media Library</span>
+        <button class="nav-item active" data-page="models" title="Models">
+          <span class="nav-icon">M</span><span class="nav-label">Models</span>
         </button>
-        <button class="nav-item" data-page="settings">
-          <span class="nav-icon">S</span><span>Settings</span>
+        <button class="nav-item" data-page="library" title="Media Library">
+          <span class="nav-icon">L</span><span class="nav-label">Media Library</span>
+        </button>
+        <button class="nav-item" data-page="settings" title="Settings">
+          <span class="nav-icon">S</span><span class="nav-label">Settings</span>
         </button>
       </nav>
       <div class="sidebar-footer">
@@ -36,6 +51,7 @@
     </aside>
 
     <main class="main">
+      <section id="page-editor" class="page"></section>
       <section id="page-models" class="page active"></section>
       <section id="page-library" class="page"></section>
       <section id="page-settings" class="page"></section>

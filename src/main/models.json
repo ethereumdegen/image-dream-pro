@@ -246,6 +246,52 @@
       ]
     },
     {
+      "id": "fal-ai/ideogram/v3/remix",
+      "name": "Ideogram V3 Remix (image-to-image)",
+      "description": "Ideogram V3 Remix — remix an input image guided by a prompt. Use strength to control how much the input image is changed.",
+      "category": "image-to-image",
+      "inputMedia": ["image"],
+      "outputMedia": ["image"],
+      "outputField": "images",
+      "inputs": [
+        { "name": "prompt", "label": "Prompt", "type": "textarea", "required": true, "placeholder": "Same subject, watercolor style, golden hour lighting" },
+        { "name": "image_url", "label": "Image to remix", "type": "image", "required": true },
+        { "name": "strength", "label": "Strength", "type": "number", "default": 0.8, "min": 0.01, "max": 1, "step": 0.05 },
+        { "name": "negative_prompt", "label": "Negative prompt", "type": "textarea" },
+        {
+          "name": "image_size",
+          "label": "Image size",
+          "type": "select",
+          "default": "square_hd",
+          "options": [
+            "square_hd",
+            "square",
+            "portrait_4_3",
+            "portrait_16_9",
+            "landscape_4_3",
+            "landscape_16_9"
+          ]
+        },
+        {
+          "name": "style",
+          "label": "Style",
+          "type": "select",
+          "default": "AUTO",
+          "options": ["AUTO", "GENERAL", "REALISTIC", "DESIGN"]
+        },
+        {
+          "name": "rendering_speed",
+          "label": "Quality (rendering speed)",
+          "type": "select",
+          "default": "BALANCED",
+          "options": ["TURBO", "BALANCED", "QUALITY"]
+        },
+        { "name": "num_images", "label": "Number of images", "type": "number", "default": 1, "min": 1, "max": 8 },
+        { "name": "expand_prompt", "label": "Expand prompt (magic prompt)", "type": "boolean", "default": true },
+        { "name": "seed", "label": "Seed (optional)", "type": "number" }
+      ]
+    },
+    {
       "id": "fal-ai/ideogram/v3/layerize-text",
       "name": "Ideogram V3 Layerize (text removal)",
       "description": "Ideogram V3 Layerize — removes on-image text from a flat graphic and returns a clean, text-free version of the image. Great for reusing posters, ads, and logos.",
@@ -405,6 +451,108 @@
       "outputField": "image",
       "inputs": [
         { "name": "image_url", "label": "Input image", "type": "image", "required": true }
+      ]
+    },
+    {
+      "id": "fal-ai/ideogram/v3/reframe",
+      "name": "Ideogram V3 Reframe (resize)",
+      "description": "Ideogram V3 Reframe — resize an image to a new aspect ratio, inpainting the new edges so the subject stays intact. Great for reformatting artwork and photos.",
+      "category": "image-to-image",
+      "inputMedia": ["image"],
+      "outputMedia": ["image"],
+      "outputField": "images",
+      "inputs": [
+        { "name": "image_url", "label": "Input image", "type": "image", "required": true },
+        {
+          "name": "image_size",
+          "label": "Output size",
+          "type": "select",
+          "default": "square_hd",
+          "options": [
+            "square_hd",
+            "square",
+            "portrait_4_3",
+            "portrait_16_9",
+            "landscape_4_3",
+            "landscape_16_9"
+          ]
+        },
+        {
+          "name": "rendering_speed",
+          "label": "Quality (rendering speed)",
+          "type": "select",
+          "default": "BALANCED",
+          "options": ["TURBO", "BALANCED", "QUALITY"]
+        },
+        {
+          "name": "style",
+          "label": "Style",
+          "type": "select",
+          "default": "AUTO",
+          "options": ["AUTO", "GENERAL", "REALISTIC", "DESIGN"]
+        },
+        { "name": "num_images", "label": "Number of images", "type": "number", "default": 1, "min": 1, "max": 8 },
+        { "name": "negative_prompt", "label": "Negative prompt", "type": "textarea" },
+        { "name": "expand_prompt", "label": "Expand prompt (magic prompt)", "type": "boolean", "default": true },
+        { "name": "seed", "label": "Seed (optional)", "type": "number" }
+      ]
+    },
+    {
+      "id": "fal-ai/recraft/upscale/creative",
+      "name": "Recraft Creative Upscale",
+      "description": "Recraft Creative Upscale — high quality upscaling with added creative detail. Input must be a PNG image.",
+      "category": "upscale",
+      "inputMedia": ["image"],
+      "outputMedia": ["image"],
+      "outputField": "images",
+      "inputs": [
+        { "name": "image_url", "label": "Input image", "type": "image", "required": true },
+        { "name": "enable_safety_checker", "label": "Enable safety checker", "type": "boolean", "default": false }
+      ]
+    },
+    {
+      "id": "fal-ai/nano-banana-2/edit",
+      "name": "Nano Banana 2 Edit (image editing)",
+      "description": "Nano Banana 2 — edit one or more input images guided by a prompt. Supports multi-image composition and fine-grained edits.",
+      "category": "image-to-image",
+      "inputMedia": ["image"],
+      "outputMedia": ["image"],
+      "outputField": "images",
+      "inputs": [
+        { "name": "prompt", "label": "Prompt", "type": "textarea", "required": true, "placeholder": "Describe the edit" },
+        { "name": "image_urls", "label": "Input images", "type": "image_array", "required": true },
+        { "name": "num_images", "label": "Number of images", "type": "number", "default": 1, "min": 1, "max": 4 },
+        {
+          "name": "aspect_ratio",
+          "label": "Aspect ratio",
+          "type": "select",
+          "default": "auto",
+          "options": ["auto", "21:9", "16:9", "3:2", "4:3", "5:4", "1:1", "4:5", "3:4", "2:3", "9:16", "4:1", "1:4", "8:1", "1:8"]
+        },
+        {
+          "name": "output_format",
+          "label": "Output format",
+          "type": "select",
+          "default": "png",
+          "options": ["png", "jpeg", "webp"]
+        },
+        {
+          "name": "resolution",
+          "label": "Resolution",
+          "type": "select",
+          "default": "1K",
+          "options": ["0.5K", "1K", "2K", "4K"]
+        },
+        {
+          "name": "safety_tolerance",
+          "label": "Safety tolerance",
+          "type": "select",
+          "default": "4",
+          "options": ["1", "2", "3", "4", "5", "6"]
+        },
+        { "name": "enable_web_search", "label": "Enable web search", "type": "boolean", "default": false },
+        { "name": "limit_generations", "label": "Limit generations", "type": "boolean", "default": true },
+        { "name": "seed", "label": "Seed (optional)", "type": "number" }
       ]
     },
     {

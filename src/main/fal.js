@@ -2,6 +2,7 @@
 // Docs: https://docs.fal.ai/model-endpoints/queue
 
 const QUEUE_BASE = 'https://queue.fal.run';
+const API_BASE = 'https://api.fal.ai';
 
 function authHeader(apiKey) {
   return { Authorization: `Key ${apiKey}` };
@@ -70,4 +71,14 @@ async function run({ apiKey, modelId, input, pollIntervalMs = 1500, timeoutMs = 
   }
 }
 
-module.exports = { run, submit, checkStatus, fetchResult };
+async function getBilling({ apiKey }) {
+  const url = `${API_BASE}/v1/account/billing?expand=credits`;
+  const res = await fetch(url, { headers: authHeader(apiKey) });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`fal.ai billing failed (${res.status}): ${text}`);
+  }
+  return res.json(); // { username, credits: { current_balance, currency } }
+}
+
+module.exports = { run, submit, checkStatus, fetchResult, getBilling };

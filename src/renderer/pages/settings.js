@@ -40,9 +40,14 @@ export async function renderSettingsPage(root) {
           <button class="btn" id="toggle-visibility" style="flex:0 0 auto;">Show</button>
         </div>
       </label>
-      <div style="display:flex; gap:8px;">
+      <div class="fal-credits" id="fal-credits">
+        <span class="credits-label">FAL credits:</span>
+        <span class="credits-value" id="credits-value">—</span>
+        <button class="btn btn-sm" id="refresh-credits">Refresh</button>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center;">
         <button class="btn primary" id="save-api-key">Save API key</button>
-        <a class="btn" href="https://fal.ai/dashboard/keys" target="_blank" rel="noreferrer">Get a key at fal.ai →</a>
+        <a class="lime-link" href="https://fal.ai/dashboard/keys" target="_blank" rel="noreferrer">Get a key at fal.ai →</a>
       </div>
     </div>
   `);
@@ -78,6 +83,35 @@ export async function renderSettingsPage(root) {
   root.appendChild(aboutPanel);
 
   const keyInput = panel.querySelector('#api-key');
+  const creditsValue = panel.querySelector('#credits-value');
+  const refreshCreditsBtn = panel.querySelector('#refresh-credits');
+
+  async function loadCredits() {
+    if (!keyInput.value.trim()) {
+      creditsValue.textContent = 'No API key';
+      creditsValue.classList.remove('ok', 'err');
+      return;
+    }
+    creditsValue.textContent = 'Loading…';
+    creditsValue.classList.remove('ok', 'err');
+    try {
+      const billing = await window.api.fal.getBilling();
+      const c = billing && billing.credits;
+      if (c && typeof c.current_balance === 'number') {
+        const amount = c.current_balance.toFixed(2);
+        const currency = c.currency || 'USD';
+        creditsValue.textContent = `${amount} ${currency}`;
+        creditsValue.classList.add('ok');
+      } else {
+        creditsValue.textContent = 'Unavailable';
+      }
+    } catch (e) {
+      creditsValue.textContent = 'Error';
+      creditsValue.title = e.message || String(e);
+      creditsValue.classList.add('err');
+    }
+  }
+
   panel.querySelector('#toggle-visibility').addEventListener('click', (ev) => {
     if (keyInput.type === 'password') {
       keyInput.type = 'text';
@@ -91,7 +125,11 @@ export async function renderSettingsPage(root) {
     await window.api.settings.set({ falApiKey: keyInput.value.trim() });
     await window.appState.refreshApiKeyStatus();
     toast('API key saved', 'ok');
+    loadCredits();
   });
+  refreshCreditsBtn.addEventListener('click', loadCredits);
+
+  loadCredits();
 
   libPanel.querySelector('#choose-library').addEventListener('click', async () => {
     const dir = await window.api.dialog.pickDirectory();

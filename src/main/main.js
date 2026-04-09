@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const path = require('path');
+const fsp = require('fs').promises;
 const settings = require('./settings');
 const library = require('./library');
 const fal = require('./fal');
@@ -44,6 +45,9 @@ app.whenReady().then(async () => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
+
+// -------- IPC: app --------
+ipcMain.handle('app:getVersion', () => app.getVersion());
 
 // -------- IPC: settings --------
 ipcMain.handle('settings:get', () => settings.getAll());
@@ -96,6 +100,47 @@ ipcMain.handle('dialog:pickDirectory', async () => {
   return res.filePaths[0];
 });
 
+ipcMain.handle('dialog:saveDataUrlAs', async (_e, { dataUrl, defaultName }) => {
+  if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) {
+    throw new Error('Invalid data URL');
+  }
+  const commaIdx = dataUrl.indexOf(',');
+  if (commaIdx < 0) throw new Error('Invalid data URL');
+  const header = dataUrl.slice(5, commaIdx);
+  const payload = dataUrl.slice(commaIdx + 1);
+  const isBase64 = /;base64/i.test(header);
+  const mime = header.split(';')[0].toLowerCase();
+  const buffer = isBase64
+    ? Buffer.from(payload, 'base64')
+    : Buffer.from(decodeURIComponent(payload), 'utf8');
+
+  const extByMime = {
+    'image/png': 'png',
+    'image/jpeg': 'jpg',
+    'image/webp': 'webp',
+    'image/gif': 'gif',
+    'image/bmp': 'bmp',
+    'image/tiff': 'tiff',
+    'image/svg+xml': 'svg',
+  };
+  const ext = extByMime[mime] || 'bin';
+
+  let suggested = defaultName || `image.${ext}`;
+  if (!path.extname(suggested)) suggested += `.${ext}`;
+
+  const res = await dialog.showSaveDialog(mainWindow, {
+    title: 'Save image as',
+    defaultPath: suggested,
+    filters: [
+      { name: 'Image', extensions: [ext] },
+      { name: 'All Files', extensions: ['*'] },
+    ],
+  });
+  if (res.canceled || !res.filePath) return null;
+  await fsp.writeFile(res.filePath, buffer);
+  return res.filePath;
+});
+
 // -------- IPC: library --------
 ipcMain.handle('library:listFolders', () => library.listFolders());
 ipcMain.handle('library:listFiles', (_e, folderRel) => library.listFiles(folderRel));
@@ -104,6 +149,9 @@ ipcMain.handle('library:deleteFolder', (_e, folderRel) => library.deleteFolder(f
 ipcMain.handle('library:deleteFile', (_e, folderRel, name) => library.deleteFile(folderRel, name));
 ipcMain.handle('library:importFiles', (_e, folderRel, srcPaths) =>
   library.importFiles(folderRel, srcPaths)
+);
+ipcMain.handle('library:saveDataUrl', (_e, folderRel, name, dataUrl) =>
+  library.saveDataUrl(folderRel, name, dataUrl)
 );
 ipcMain.handle('library:readAsDataUrl', (_e, folderRel, name) =>
   library.readAsDataUrl(folderRel, name)
@@ -130,4 +178,12 @@ ipcMain.handle('fal:run', async (_e, { modelId, input, saveFolder }) => {
   const result = await fal.run({ apiKey, modelId, input });
   const saved = await library.saveFalResult(result, saveFolder || '', modelId);
   return { result, saved };
+});
+
+ipcMain.handle('fal:getBilling', async () => {
+  const apiKey = settings.get('falApiKey');
+  if (!apiKey) {
+    throw new Error('No fal.ai API key set.');
+  }
+  return fal.getBilling({ apiKey });
 });

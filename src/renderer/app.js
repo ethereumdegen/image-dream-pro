@@ -1,9 +1,11 @@
 import { renderModelsPage } from './pages/models.js';
 import { renderLibraryPage } from './pages/library.js';
 import { renderSettingsPage } from './pages/settings.js';
+import { renderEditorPage } from './pages/editor.js';
 import { toast } from './toast.js';
 
 const pages = {
+  editor: { el: document.getElementById('page-editor'), render: renderEditorPage, rendered: false },
   models: { el: document.getElementById('page-models'), render: renderModelsPage, rendered: false },
   library: {
     el: document.getElementById('page-library'),
@@ -22,8 +24,8 @@ async function showPage(name) {
   document.querySelectorAll('.nav-item').forEach((b) => b.classList.remove('active'));
   document.querySelector(`.nav-item[data-page="${name}"]`)?.classList.add('active');
   pages[name].el.classList.add('active');
-  // Re-render library each visit so file list is fresh.
-  if (name === 'library' || !pages[name].rendered) {
+  // Re-render library and editor each visit so file list is fresh.
+  if (name === 'library' || name === 'editor' || !pages[name].rendered) {
     try {
       await pages[name].render(pages[name].el);
       pages[name].rendered = true;
@@ -36,6 +38,22 @@ async function showPage(name) {
 
 document.querySelectorAll('.nav-item').forEach((btn) => {
   btn.addEventListener('click', () => showPage(btn.dataset.page));
+});
+
+const SIDEBAR_COLLAPSED_KEY = 'sidebarCollapsed';
+function applySidebarCollapsed(collapsed) {
+  document.body.classList.toggle('sidebar-collapsed', collapsed);
+  const btn = document.getElementById('sidebar-toggle');
+  if (btn) {
+    btn.innerHTML = collapsed ? '&raquo;' : '&laquo;';
+    btn.title = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+  }
+}
+applySidebarCollapsed(localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1');
+document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
+  const next = !document.body.classList.contains('sidebar-collapsed');
+  applySidebarCollapsed(next);
+  localStorage.setItem(SIDEBAR_COLLAPSED_KEY, next ? '1' : '0');
 });
 
 async function refreshApiKeyStatus() {
@@ -87,7 +105,25 @@ window.appState = {
   getActiveJobs: () => activeJobs,
 };
 
+// Stop the browser from navigating when files are dropped outside a valid
+// drop target (e.g. the editor canvas). Individual drop targets still
+// handle their own drop events.
+window.addEventListener('dragover', (e) => e.preventDefault());
+window.addEventListener('drop', (e) => e.preventDefault());
+
+async function loadAppVersion() {
+  const badge = document.getElementById('brand-version');
+  if (!badge) return;
+  try {
+    const version = await window.api.app.getVersion();
+    badge.textContent = `v${version}`;
+  } catch {
+    badge.textContent = '';
+  }
+}
+
 (async function init() {
   await refreshApiKeyStatus();
+  await loadAppVersion();
   await showPage('models');
 })();

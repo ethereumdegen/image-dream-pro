@@ -168,16 +168,53 @@ async function uniqueFilename(folderAbs, desiredName) {
   }
 }
 
-async function importFiles(folderRel, srcPaths) {
+// Resolve a writable path inside the library: ensures the folder exists,
+// sanitises the desired filename, picks a unique name, then hands the absolute
+// destination to `producer(dest)`. Returns the resolved {folder, name}.
+async function writeIntoLibrary(folderRel, desiredName, producer) {
   const { abs } = safeRel(folderRel);
   await fsp.mkdir(abs, { recursive: true });
+  const name = await uniqueFilename(abs, safeName(desiredName));
+  const dest = path.join(abs, name);
+  await producer(dest);
+  return { folder: folderRel || '', name };
+}
+
+const DATA_URL_PREFIX = 'data:';
+
+// Write a data: URL to the library and return {folder, name}. The desired
+// filename is sanitised; if it has no extension we infer one from the mime
+// type. Collisions are resolved with uniqueFilename().
+async function saveDataUrl(folderRel, desiredName, dataUrl) {
+  if (typeof dataUrl !== 'string' || !dataUrl.startsWith(DATA_URL_PREFIX)) {
+    throw new Error('Invalid data URL');
+  }
+  const commaIdx = dataUrl.indexOf(',');
+  if (commaIdx < 0) throw new Error('Invalid data URL');
+  const header = dataUrl.slice(DATA_URL_PREFIX.length, commaIdx);
+  const payload = dataUrl.slice(commaIdx + 1);
+  const isBase64 = /;base64/i.test(header);
+  const mime = header.split(';')[0].toLowerCase();
+  const buffer = isBase64
+    ? Buffer.from(payload, 'base64')
+    : Buffer.from(decodeURIComponent(payload), 'utf8');
+
+  let name = desiredName || 'image';
+  if (!path.extname(name)) {
+    name += guessExtFromUrlOrContentType('', mime);
+  }
+  return writeIntoLibrary(folderRel, name, (dest) => fsp.writeFile(dest, buffer));
+}
+
+async function importFiles(folderRel, srcPaths) {
   const results = [];
   for (const src of srcPaths || []) {
     try {
-      const name = await uniqueFilename(abs, path.basename(src));
-      const dest = path.join(abs, name);
-      await fsp.copyFile(src, dest);
-      results.push({ ok: true, name, folder: folderRel || '' });
+      // eslint-disable-next-line no-await-in-loop
+      const ref = await writeIntoLibrary(folderRel, path.basename(src), (dest) =>
+        fsp.copyFile(src, dest)
+      );
+      results.push({ ok: true, ...ref });
     } catch (e) {
       results.push({ ok: false, src, error: e.message });
     }
@@ -221,6 +258,8 @@ function guessExtFromUrlOrContentType(url, contentType) {
   if (contentType.includes('webp')) return '.webp';
   if (contentType.includes('gif')) return '.gif';
   if (contentType.includes('svg')) return '.svg';
+  if (contentType.includes('bmp')) return '.bmp';
+  if (contentType.includes('tiff')) return '.tiff';
   if (contentType.includes('mp4')) return '.mp4';
   if (contentType.includes('webm')) return '.webm';
   if (contentType.includes('quicktime')) return '.mov';
@@ -259,9 +298,6 @@ async function downloadToBuffer(url) {
 }
 
 async function saveFalResult(result, folderRel, modelId) {
-  const { abs } = safeRel(folderRel);
-  await fsp.mkdir(abs, { recursive: true });
-
   // The actual payload is usually at result.data, but some endpoints return
   // the payload at the top level. Handle both.
   const payload = result && result.data ? result.data : result;
@@ -279,13 +315,15 @@ async function saveFalResult(result, folderRel, modelId) {
   for (let i = 0; i < mediaUrls.length; i += 1) {
     const { url, contentType } = mediaUrls[i];
     try {
+      // eslint-disable-next-line no-await-in-loop
       const { buffer, contentType: ct } = await downloadToBuffer(url);
       const ext = guessExtFromUrlOrContentType(url, contentType || ct);
       const desired = `${stamp}_${slug}${mediaUrls.length > 1 ? `_${i + 1}` : ''}${ext}`;
-      const name = await uniqueFilename(abs, desired);
-      const dest = path.join(abs, name);
-      await fsp.writeFile(dest, buffer);
-      saved.push({ folder: folderRel || '', name, url });
+      // eslint-disable-next-line no-await-in-loop
+      const ref = await writeIntoLibrary(folderRel, desired, (dest) =>
+        fsp.writeFile(dest, buffer)
+      );
+      saved.push({ ...ref, url });
     } catch (e) {
       saved.push({ url, error: e.message });
     }
@@ -302,6 +340,7 @@ module.exports = {
   deleteFolder,
   deleteFile,
   importFiles,
+  saveDataUrl,
   readAsDataUrl,
   readPathAsDataUrl,
   absFilePath,

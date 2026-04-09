@@ -1,6 +1,9 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
+  app: {
+    getVersion: () => ipcRenderer.invoke('app:getVersion'),
+  },
   settings: {
     get: () => ipcRenderer.invoke('settings:get'),
     set: (patch) => ipcRenderer.invoke('settings:set', patch),
@@ -10,6 +13,7 @@ contextBridge.exposeInMainWorld('api', {
     pickImage: () => ipcRenderer.invoke('dialog:pickImage'),
     pickImages: () => ipcRenderer.invoke('dialog:pickImages'),
     pickDirectory: () => ipcRenderer.invoke('dialog:pickDirectory'),
+    saveDataUrlAs: (args) => ipcRenderer.invoke('dialog:saveDataUrlAs', args),
   },
   library: {
     listFolders: () => ipcRenderer.invoke('library:listFolders'),
@@ -19,6 +23,8 @@ contextBridge.exposeInMainWorld('api', {
     deleteFile: (folderRel, name) => ipcRenderer.invoke('library:deleteFile', folderRel, name),
     importFiles: (folderRel, srcPaths) =>
       ipcRenderer.invoke('library:importFiles', folderRel, srcPaths),
+    saveDataUrl: (folderRel, name, dataUrl) =>
+      ipcRenderer.invoke('library:saveDataUrl', folderRel, name, dataUrl),
     readAsDataUrl: (folderRel, name) =>
       ipcRenderer.invoke('library:readAsDataUrl', folderRel, name),
     readPathAsDataUrl: (absPath) => ipcRenderer.invoke('library:readPathAsDataUrl', absPath),
@@ -31,5 +37,6 @@ contextBridge.exposeInMainWorld('api', {
   },
   fal: {
     run: (args) => ipcRenderer.invoke('fal:run', args),
+    getBilling: () => ipcRenderer.invoke('fal:getBilling'),
   },
 });
